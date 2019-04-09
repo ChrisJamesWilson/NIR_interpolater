@@ -26,14 +26,6 @@ def irtf_retrieve():
 		logg[i] = t[i][2]
 		Z[i] = t[i][3]
 
-	plt.figure()
-	plt.scatter(Teff, logg, c=Z)
-	plt.xlabel('Teff')
-	plt.ylabel('logg')
-	plt.gca().invert_xaxis()
-	plt.gca().invert_yaxis()
-	plt.show()
-
 	t = [ID,Teff,logg,Z]
 	return(t)
 

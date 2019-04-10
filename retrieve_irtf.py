@@ -1,3 +1,14 @@
+import numpy as np
+from astropy.io import ascii
+import matplotlib.pyplot as plt
+import itertools
+
+# Code pertaining to reading and also determining file names in the irtf library
+
+# Enter location of the irtf fits files relative to this directory here:
+
+irtf_file = 'irtf_param.txt'
+
 def irtf_retrieve():
 	t = ascii.read(irtf_file)
 

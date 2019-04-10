@@ -2,7 +2,7 @@
 import numpy as np
 import retrieve_irtf
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+#from mpl_toolkits.mplot3d import Axes3D
 
 # t is a table of the stars in the irtf library. The coloumns are: ID,   Teff(K),   logg,   Z/Zsun
 t = retrieve_irtf.irtf_retrieve()
@@ -11,6 +11,7 @@ Teff = np.array(t[1])
 logg = np.array(t[2])
 Z = np.array(t[3])
 
+ID = t[0]
 t = np.stack((Teff,logg,Z), axis=1)
 
 
@@ -83,8 +84,14 @@ rel_mean = mean/np.sum(mean)
  # Method 2 is similar to 1, but instead picks a few of the closest values.
 
 ind = np.argsort(mean)
-closest = np.array([np.where(ind==0), np.where(ind==1), np.where(ind==2)])
-  # THIS LINE DOES NOT WORK YET
+closest = np.array([np.where(ind==0)[1], np.where(ind==1)[1], np.where(ind==2)[1]])
+ # Location of the 3 closest 
+stars = np.array([t[closest[0][0]], t[closest[1][0]], t[closest[2][0]]])
+rel_weight = np.array([compare[0][2][closest[0][0]], compare[0][2][closest[1][0]],\
+             compare[0][2][closest[2][0]]])
+rel_weight = rel_weight/sum(rel_weight)
+ # Has normalised the weighting of these 3 stars vs the chosen point. These 
+ # weights must then be multiplies with the corresponding stars
 
 
 

@@ -93,6 +93,17 @@ rel_weight = rel_weight/sum(rel_weight)
  # Has normalised the weighting of these 3 stars vs the chosen point. These 
  # weights must then be multiplies with the corresponding stars
 
+##########################
+ # Dealing with the files
+##########################
+os.chdir('./irtf')
+
+filename = os.getcwd() + '/'+ str(spec_ID[0]) + '.fits'
+file = fits.getdata(filename, ext=0)
+
+from astropy.table import Table
+file = Table.read(filename, format='fits')
+
 
 
 

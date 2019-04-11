@@ -33,22 +33,22 @@ rad = 2.5
 
 range_Teff = max(Teff)-min(Teff)
 #Teff_new = input('Please enter a Teff between '+str(max(Teff))+' and '+min(Teff))
-Teff_new = 6608
+Teff_new = 4645
 range_logg = max(logg)-min(logg)
 #logg_new = input('Please enter a logg between '+str(max(logg))+' and '+min(logg))
-logg_new = 4.3
+logg_new = 0.95
 range_Z = max(Z)-min(Z)
 #Z_new = input('Please enter a Z between '+str(max(Z))+' and '+min(Z))
 Z_new = 0.0
 new_point = np.array([Teff_new, logg_new, Z_new])
 
-plt.figure()
-plt.scatter(Teff, logg, c=Z)
-plt.xlabel('Teff')
-plt.ylabel('logg')
-plt.gca().invert_xaxis()
-plt.gca().invert_yaxis()
-plt.show()
+#plt.figure()
+#plt.scatter(Teff, logg, c=Z)
+#plt.xlabel('Teff')
+#plt.ylabel('logg')
+#plt.gca().invert_xaxis()
+#plt.gca().invert_yaxis()
+#plt.show()
 
 length = len(Z)
 #one = np.ones((length,3))
@@ -57,7 +57,9 @@ new_point_big = np.tile(new_point,(length,1))
  #Creates an array of a chosen point of length of orginal data, to directly
  #compare the two
 
-Diff = abs(new_point_big - t)
+n = 1
+Diff = abs((new_point_big - t)**n)
+ # nth power
 compare = np.array([[Diff[:,0]/range_Teff, Diff[:,1]/range_logg, Diff[:,2]/range_Z]])
  # Normalises values based on the parameters respective ranges
 
@@ -74,28 +76,32 @@ mean = np.sum(compare, axis=1)/3
  # We do so by again normalising the relative differences (mean) to now be
  # relative to each other, and using that as a basis for interpolation
  
-rel_mean = mean/np.sum(mean)
+rel_weight = (mean/np.sum(mean)).T
+
  # Now each of these stars are indexed according to their position in the original
  # data, and this rel_mean value should be a multiplier of their spectral values,
  # summative to the final star
+spec_ID = ID
 
 #########
 # Method 2 #
 #########
  
- # Method 2 is similar to 1, but instead picks a few of the closest values.
-
-ind = np.argsort(mean)
-closest = np.array([np.where(ind==0)[1], np.where(ind==1)[1], np.where(ind==2)[1]])
- # Location of the 3 closest 
-stars = np.array([t[closest[0][0]], t[closest[1][0]], t[closest[2][0]]])
-rel_weight = np.array([compare[0][2][closest[0][0]], compare[0][2][closest[1][0]],\
-             compare[0][2][closest[2][0]]])
-rel_weight = rel_weight/sum(rel_weight)
-
- # Has normalised the weighting of these 3 stars vs the chosen point. These 
- # weights must then be multiplies with the corresponding stars
-spec_ID = np.array([ID[closest[0][0]], ID[closest[1][0]], ID[closest[2][0]]])
+# # Method 2 is similar to 1, but instead picks a few of the closest values.
+#
+#ind = np.argsort(mean)
+#closest = np.array([np.where(ind==0)[1], np.where(ind==1)[1], np.where(ind==2)[1]])
+# # Location of the 3 closest 
+#stars = np.array([t[closest[0][0]], t[closest[1][0]], t[closest[2][0]]])
+#
+#rel_weight = np.array([compare[0][2][closest[0][0]], compare[0][2][closest[1][0]],\
+#             compare[0][2][closest[2][0]]])
+#             
+#rel_weight = rel_weight/sum(rel_weight)
+#
+# # Has normalised the weighting of these 3 stars vs the chosen point. These 
+# # weights must then be multiplies with the corresponding stars
+#spec_ID = np.array([ID[closest[0][0]], ID[closest[1][0]], ID[closest[2][0]]])
 
 
 ##########################
@@ -121,16 +127,16 @@ for i in range(len(spec_ID)) :
         # Also multiplies the spectra by their relative weights to the chosen point
 	
 
-for i in range(3):
-	plt.figure()
-	plt.plot(chosen_spectra[:,0],chosen_spectra[:,i+1]/rel_weight[i])
+#for i in range(3):
+#	plt.figure()
+#	plt.plot(chosen_spectra[:,0],chosen_spectra[:,i+1]/rel_weight[i])
 
 plt.figure()
 int_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).T
 
 plt.plot(int_spectra[:,0], int_spectra[:,1])
 
-
+plt.show()
 
 
 

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 #from mpl_toolkits.mplot3d import Axes3D
 
 # t is a table of the stars in the irtf library. The coloumns are: ID,   Teff(K),   logg,   Z/Zsun
-t = retrieve_irtf.irtf_retrieve()
+t = retrieve_irtf.param_retrieve()
 
 Teff = np.array(t[1])
 logg = np.array(t[2])

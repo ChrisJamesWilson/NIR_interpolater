@@ -119,7 +119,12 @@ for i in range(len(spec_ID)) :
         # is the x axis and the other columns are the chosen stars in order of
         # closest to farthest 
         # Also multiplies the spectra by their relative weights to the chosen point
-int_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).T
+	
+plt.figure()
+for i in range(1,3):
+	plt.plot(chosen_spectra[:,0],chosen_spectra[:,i])
+	
+chosen_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).T
 
 plt.plot(chosen_spectra[:,0], chosen_spectra[:,1])
 

@@ -121,12 +121,12 @@ for i in range(len(spec_ID)) :
         # Also multiplies the spectra by their relative weights to the chosen point
 	
 plt.figure()
-for i in range(1,3):
-	plt.plot(chosen_spectra[:,0],chosen_spectra[:,i]/rel_weight[i])
+for i in range(3):
+	plt.plot(chosen_spectra[:,0],chosen_spectra[:,i+1]/rel_weight[i])
 	
-chosen_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).T
+int_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).T
 
-plt.plot(chosen_spectra[:,0], chosen_spectra[:,1])
+plt.plot(int_spectra[:,0], int_spectra[:,1])
 
 
 

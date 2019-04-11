@@ -1,11 +1,13 @@
 
 import numpy as np
-import retrieve_irtf
 import matplotlib.pyplot as plt
+import os
+from astropy.io import fits
+import retrieve_irtf as ret
 #from mpl_toolkits.mplot3d import Axes3D
 
 # t is a table of the stars in the irtf library. The coloumns are: ID,   Teff(K),   logg,   Z/Zsun
-t = retrieve_irtf.param_retrieve()
+t = ret.param_retrieve()
 
 Teff = np.array(t[1])
 logg = np.array(t[2])
@@ -31,13 +33,13 @@ rad = 2.5
 
 range_Teff = max(Teff)-min(Teff)
 #Teff_new = input('Please enter a Teff between '+str(max(Teff))+' and '+min(Teff))
-Teff_new = 5500
+Teff_new = 6608
 range_logg = max(logg)-min(logg)
 #logg_new = input('Please enter a logg between '+str(max(logg))+' and '+min(logg))
-logg_new = 3.7
+logg_new = 4.3
 range_Z = max(Z)-min(Z)
 #Z_new = input('Please enter a Z between '+str(max(Z))+' and '+min(Z))
-Z_new = -1
+Z_new = 0.0
 new_point = np.array([Teff_new, logg_new, Z_new])
 
 plt.figure()
@@ -90,19 +92,37 @@ stars = np.array([t[closest[0][0]], t[closest[1][0]], t[closest[2][0]]])
 rel_weight = np.array([compare[0][2][closest[0][0]], compare[0][2][closest[1][0]],\
              compare[0][2][closest[2][0]]])
 rel_weight = rel_weight/sum(rel_weight)
+
  # Has normalised the weighting of these 3 stars vs the chosen point. These 
  # weights must then be multiplies with the corresponding stars
+spec_ID = np.array([ID[closest[0][0]], ID[closest[1][0]], ID[closest[2][0]]])
+
 
 ##########################
  # Dealing with the files
 ##########################
-os.chdir('./irtf')
 
-filename = os.getcwd() + '/'+ str(spec_ID[0]) + '.fits'
-file = fits.getdata(filename, ext=0)
+#os.chdir('./irtf')
+chosen_spectra = []
+for i in range(len(spec_ID)) :
+    
+    file = ret.get_spectra(spec_ID[i])
+    if i == 0 :
+        chosen_spectra = file
+        chosen_spectra[:,i+1] = chosen_spectra[:,i+1]*rel_weight[i]
+    else : 
+        temp_spectra = np.array([file[:,1]]).T        
+        chosen_spectra = np.concatenate((chosen_spectra, temp_spectra), axis=1)
+        chosen_spectra[:,i+1] = chosen_spectra[:,i+1]*rel_weight[i]
 
-from astropy.table import Table
-file = Table.read(filename, format='fits')
+        # Sets up a length x (i+1) array of the spectras, where the first column
+        # is the x axis and the other columns are the chosen stars in order of
+        # closest to farthest 
+        # Also multiplies the spectra by their relative weights to the chosen point
+int_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).T
+
+plt.plot(chosen_spectra[:,0], chosen_spectra[:,1])
+
 
 
 

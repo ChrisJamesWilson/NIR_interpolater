@@ -1,7 +1,6 @@
 import numpy as np
 from astropy.io import ascii
 from astropy.io import fits
-import matplotlib.pyplot as plt
 import itertools
 
 # Code pertaining to reading and also determining file names in the irtf library
@@ -50,7 +49,7 @@ def get_spectra(ID):
 	# creates a new array to put all the values in
 	tt = np.zeros([len(t),2])
 	tt[:,1] = t
-	tt[:,0] = int(np.arange(0,len(t)) + 1)   
+	tt[:,0] = np.arange(0,len(t))
 	
 	# returns the new array
 	return(tt)
@@ -74,6 +73,8 @@ def set_spectra_name(Teff,logg,Z):
 		+ '_Z' +temp_s[2]
 
 	return sp_file
+
+
 
 	
     

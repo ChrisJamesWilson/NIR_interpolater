@@ -136,10 +136,18 @@ int_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).
 
 plt.plot(int_spectra[:,0], int_spectra[:,1])
 
+ID = 'IRL267'
+t = get_spectra(ID)
+
+t2 = np.loadtxt('sometxt.txt')
+
+t2[:,1][abs(t2[:,1])>9e2] = 0
+
+f = np.linspace(0,len(t),len(t2))
+
+plt.plot(f,t2[:,1])
+
 plt.show()
-
-
-
 
 
 

@@ -122,7 +122,7 @@ for i in range(len(spec_ID)) :
 	
 plt.figure()
 for i in range(1,3):
-	plt.plot(chosen_spectra[:,0],chosen_spectra[:,i])
+	plt.plot(chosen_spectra[:,0],chosen_spectra[:,i]/rel_weight[i])
 	
 chosen_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).T
 

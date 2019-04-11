@@ -120,10 +120,12 @@ for i in range(len(spec_ID)) :
         # closest to farthest 
         # Also multiplies the spectra by their relative weights to the chosen point
 	
-plt.figure()
+
 for i in range(3):
+	plt.figure()
 	plt.plot(chosen_spectra[:,0],chosen_spectra[:,i+1]/rel_weight[i])
-	
+
+plt.figure()
 int_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).T
 
 plt.plot(int_spectra[:,0], int_spectra[:,1])

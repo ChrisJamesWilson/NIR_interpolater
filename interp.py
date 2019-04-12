@@ -1,6 +1,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.interpolate as interp
 import os
 from astropy.io import fits
 import retrieve_irtf as ret
@@ -32,15 +33,17 @@ rad = 2.5
 
 
 range_Teff = max(Teff)-min(Teff)
-#Teff_new = input('Please enter a Teff between '+str(max(Teff))+' and '+min(Teff))
-Teff_new = 4645
+#Teff_new = input('Please enter a Teff between ' + str(max(Teff)) + ' and ' + str(min(Teff)))
+Teff_new = 5986
 range_logg = max(logg)-min(logg)
-#logg_new = input('Please enter a logg between '+str(max(logg))+' and '+min(logg))
-logg_new = 0.95
+#logg_new = input('Please enter a logg between ' + str(max(logg)) + ' and ' + str(min(logg)))
+logg_new = 4.11
 range_Z = max(Z)-min(Z)
-#Z_new = input('Please enter a Z between '+str(max(Z))+' and '+min(Z))
-Z_new = 0.0
+#Z_new = input('Please enter a Z between ' + str(max(Z)) + ' and ' + str(min(Z)))
+Z_new = -0.13
 new_point = np.array([Teff_new, logg_new, Z_new])
+
+# Removed IRL60 for testing
 
 #plt.figure()
 #plt.scatter(Teff, logg, c=Z)
@@ -57,13 +60,22 @@ new_point_big = np.tile(new_point,(length,1))
  #Creates an array of a chosen point of length of orginal data, to directly
  #compare the two
 
-n = 1
-Diff = abs((new_point_big - t)**n)
+Tn = 1
+gn = 1
+Zn = 1
+
+Diff = abs(new_point_big - t)
+
+Diff[:,0] = Diff[:,0]**Tn
+Diff[:,1] = Diff[:,1]**gn
+Diff[:,2] = Diff[:,2]**Zn
+
  # nth power
 compare = np.array([[Diff[:,0]/range_Teff, Diff[:,1]/range_logg, Diff[:,2]/range_Z]])
  # Normalises values based on the parameters respective ranges
 
-mean = np.sum(compare, axis=1)/3
+#mean = np.sum(compare, axis=1)/3
+mean = np.sqrt(Diff[:,0]**2 + Diff[:,1]**2 + Diff[:,2]**2)
  # Finds the relative normalised differences of any empirical star to the defined point
  
  # Square and squareroot would probably be a better idea here
@@ -71,17 +83,16 @@ mean = np.sum(compare, axis=1)/3
 #########
 # Method 1 #
 #########
+
+# Method 1 is such that ALL stars are considered for a single point.
+# We do so by again normalising the relative differences (mean) to now be
+# relative to each other, and using that as a basis for interpolation
  
- # Method 1 is such that ALL stars are considered for a single point.
- # We do so by again normalising the relative differences (mean) to now be
- # relative to each other, and using that as a basis for interpolation
- 
-rel_weight = (mean/np.sum(mean)).T
+rel_weight = (1/mean).T
 
  # Now each of these stars are indexed according to their position in the original
  # data, and this rel_mean value should be a multiplier of their spectral values,
  # summative to the final star
-spec_ID = ID
 
 #########
 # Method 2 #
@@ -109,44 +120,46 @@ spec_ID = ID
 ##########################
 
 #os.chdir('./irtf')
-chosen_spectra = []
-for i in range(len(spec_ID)) :
-    
-    file = ret.get_spectra(spec_ID[i])
-    if i == 0 :
-        chosen_spectra = file
-        chosen_spectra[:,i+1] = chosen_spectra[:,i+1]*rel_weight[i]
-    else : 
-        temp_spectra = np.array([file[:,1]]).T        
-        chosen_spectra = np.concatenate((chosen_spectra, temp_spectra), axis=1)
-        chosen_spectra[:,i+1] = chosen_spectra[:,i+1]*rel_weight[i]
+
+int_spectra = np.zeros(15000)
+
+for i in range(len(rel_weight)):
+	int_spectra = int_spectra + ret.get_spectra(ID[i])[:,1]*rel_weight[i]
 
         # Sets up a length x (i+1) array of the spectras, where the first column
         # is the x axis and the other columns are the chosen stars in order of
         # closest to farthest 
         # Also multiplies the spectra by their relative weights to the chosen point
-	
+
 
 #for i in range(3):
 #	plt.figure()
 #	plt.plot(chosen_spectra[:,0],chosen_spectra[:,i+1]/rel_weight[i])
 
-plt.figure()
-int_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).T
 
-plt.plot(int_spectra[:,0], int_spectra[:,1])
+#int_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).T
 
 ID = 'IRL267'
-t = get_spectra(ID)
+t = ret.get_spectra(ID)
 
 t2 = np.loadtxt('sometxt.txt')
 
 t2[:,1][abs(t2[:,1])>9e2] = 0
 
-f = np.linspace(0,len(t),len(t2))
+x = np.linspace(0,len(t2),len(t))
 
-plt.plot(f,t2[:,1])
+fp = t2[:,0]
 
+xp = np.linspace(0,len(t2),len(t2))
+
+gp = np.interp(x,xp,fp)
+
+plt.figure()
+
+plt.plot(t2[:,0],t2[:,1]/t2[0,1], gp, int_spectra/int_spectra[0])
+
+plt.xlabel('Wavelength (\u03BCm)')
+plt.ylabel('Normalised Flux')
 plt.show()
 
 

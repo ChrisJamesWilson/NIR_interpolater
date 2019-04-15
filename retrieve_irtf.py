@@ -7,11 +7,10 @@ import itertools
 
 # Enter location of the irtf fits files relative to this directory here:
 
-irtf_file = 'irtf_param.txt'
 
 def param_retrieve():
 	## This retrieves all the paramter data and outputs it as an array
-
+	irtf_file = 'irtf_param.txt'
 	# first it reads the param file
 	t = ascii.read(irtf_file)
 

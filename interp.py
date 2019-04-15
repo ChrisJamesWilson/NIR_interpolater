@@ -7,7 +7,10 @@ from astropy.io import fits
 import retrieve_irtf as ret
 #from mpl_toolkits.mplot3d import Axes3D
 
+
+
 # t is a table of the stars in the irtf library. The coloumns are: ID,   Teff(K),   logg,   Z/Zsun
+
 t = ret.param_retrieve()
 
 Teff = np.array(t[1])
@@ -34,16 +37,20 @@ rad = 2.5
 
 range_Teff = max(Teff)-min(Teff)
 #Teff_new = input('Please enter a Teff between ' + str(max(Teff)) + ' and ' + str(min(Teff)))
-Teff_new = 5986
+Teff_new = 5741
 range_logg = max(logg)-min(logg)
 #logg_new = input('Please enter a logg between ' + str(max(logg)) + ' and ' + str(min(logg)))
-logg_new = 4.11
+logg_new = 0.81
 range_Z = max(Z)-min(Z)
 #Z_new = input('Please enter a Z between ' + str(max(Z)) + ' and ' + str(min(Z)))
-Z_new = -0.13
+Z_new = 0.07
 new_point = np.array([Teff_new, logg_new, Z_new])
 
-# Removed IRL60 for testing
+# Removed IRL46 for testing
+
+
+
+
 
 #plt.figure()
 #plt.scatter(Teff, logg, c=Z)
@@ -74,17 +81,17 @@ Diff[:,1] = Diff[:,1]**gn
 Diff[:,2] = Diff[:,2]**Zn
 
  # nth power
-compare = np.array([Diff[:,0]/range_Teff, Diff[:,1]/range_logg, Diff[:,2]/range_Z])
+compare = np.array([Diff[:,0]/max(Diff[:,0]), Diff[:,1]/max(Diff[:,1]), Diff[:,2]/max(Diff[:,2])])
  # Normalises values based on the parameters respective ranges
 
 #mean = np.sum(compare, axis=1)/3
-mean = np.sqrt(Diff[:,0]**2 + Diff[:,1]**2 + Diff[:,2]**2)
+dist = np.sqrt(compare[0,:]**2 + compare[1,:]**2 + compare[2,:]**2)
  # Finds the relative normalised differences of any empirical star to the defined point
-diff_sort = np.sort(mean)
+diff_sort = np.sort(dist)
 
-radii = 5e2
+radii = 0.3
 
-stars = np.where(mean < radii)[0]
+stars = np.where(dist < radii)[0]
 
 #close = 5
 
@@ -102,8 +109,11 @@ stars = np.where(mean < radii)[0]
 # Method 1 is such that ALL stars are considered for a single point.
 # We do so by again normalising the relative differences (mean) to now be
 # relative to each other, and using that as a basis for interpolation
- 
-rel_weight = (1/mean).T
+
+
+rel_weight = (1/dist).T
+
+rel_weight = rel_weight/np.sum(rel_weight[stars])
 
  # Now each of these stars are indexed according to their position in the original
  # data, and this rel_mean value should be a multiplier of their spectral values,
@@ -141,10 +151,10 @@ int_spectra = np.zeros(15000)
 for i in stars:
 	int_spectra = int_spectra + ret.get_spectra(ID[int(i)])[:,1]*rel_weight[int(i)]
 
-        # Sets up a length x (i+1) array of the spectras, where the first column
-        # is the x axis and the other columns are the chosen stars in order of
-        # closest to farthest 
-        # Also multiplies the spectra by their relative weights to the chosen point
+	# Sets up a length x (i+1) array of the spectras, where the first column
+	# is the x axis and the other columns are the chosen stars in order of
+	# closest to farthest 
+	# Also multiplies the spectra by their relative weights to the chosen point
 
 
 #for i in range(3):
@@ -157,7 +167,7 @@ for i in stars:
 t_1 = ret.get_spectra(ID[int(stars[0])])
 #t_2 = ret.get_spectra(ID[int(stars[1])])
 #t_3 = ret.get_spectra(ID[int(stars[2])])
-t_rl = ret.get_spectra('IRL060')
+t_rl = ret.get_spectra('IRL046')
 
 t2 = np.loadtxt('sometxt.txt')
 

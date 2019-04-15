@@ -66,20 +66,35 @@ Zn = 1
 
 Diff = abs(new_point_big - t)
 
+
+
+
 Diff[:,0] = Diff[:,0]**Tn
 Diff[:,1] = Diff[:,1]**gn
 Diff[:,2] = Diff[:,2]**Zn
 
  # nth power
-compare = np.array([[Diff[:,0]/range_Teff, Diff[:,1]/range_logg, Diff[:,2]/range_Z]])
+compare = np.array([Diff[:,0]/range_Teff, Diff[:,1]/range_logg, Diff[:,2]/range_Z])
  # Normalises values based on the parameters respective ranges
 
 #mean = np.sum(compare, axis=1)/3
 mean = np.sqrt(Diff[:,0]**2 + Diff[:,1]**2 + Diff[:,2]**2)
  # Finds the relative normalised differences of any empirical star to the defined point
- 
- # Square and squareroot would probably be a better idea here
- 
+diff_sort = np.sort(mean)
+
+radii = 5e2
+
+stars = np.where(mean < radii)[0]
+
+#close = 5
+
+#star = np.zeros(close)
+
+#for i in range(close):
+	#star[i] = int(np.where(mean == diff_sort[i])[0][0])
+
+# Square and squareroot would probably be a better idea here
+
 #########
 # Method 1 #
 #########
@@ -123,8 +138,8 @@ rel_weight = (1/mean).T
 
 int_spectra = np.zeros(15000)
 
-for i in range(len(rel_weight)):
-	int_spectra = int_spectra + ret.get_spectra(ID[i])[:,1]*rel_weight[i]
+for i in stars:
+	int_spectra = int_spectra + ret.get_spectra(ID[int(i)])[:,1]*rel_weight[int(i)]
 
         # Sets up a length x (i+1) array of the spectras, where the first column
         # is the x axis and the other columns are the chosen stars in order of
@@ -139,26 +154,33 @@ for i in range(len(rel_weight)):
 
 #int_spectra = np.array([chosen_spectra[:,0], chosen_spectra[:,1:].sum(axis=1)]).T
 
-ID = 'IRL267'
-t = ret.get_spectra(ID)
+t_1 = ret.get_spectra(ID[int(stars[0])])
+#t_2 = ret.get_spectra(ID[int(stars[1])])
+#t_3 = ret.get_spectra(ID[int(stars[2])])
+t_rl = ret.get_spectra('IRL060')
 
 t2 = np.loadtxt('sometxt.txt')
 
 t2[:,1][abs(t2[:,1])>9e2] = 0
 
-x = np.linspace(0,len(t2),len(t))
+x = np.linspace(0,len(t2),len(t_1))
 
 fp = t2[:,0]
 
 xp = np.linspace(0,len(t2),len(t2))
 
-gp = np.interp(x,xp,fp)
+#gp = np.interp(x,xp,fp)
+
+gp = np.arange(0,len(t_1))
 
 plt.figure()
 
-plt.plot(t2[:,0],t2[:,1]/t2[0,1], gp, int_spectra/int_spectra[0])
+plt.plot(gp,t_rl[:,1]/t_rl[0,1], 'r', gp, int_spectra/int_spectra[0],'b')
 
-plt.xlabel('Wavelength (\u03BCm)')
+
+#compar = t_rl - int_spectra
+
+plt.xlabel('Wavelength (\u03BC m)')
 plt.ylabel('Normalised Flux')
 plt.show()
 

@@ -185,13 +185,16 @@ gp = np.arange(0,len(t_1))
 
 plt.figure()
 
-plt.plot(gp,t_rl[:,1]/t_rl[0,1], 'r', gp, int_spectra/int_spectra[0],'b')
-
-
+ax = plt.subplot(111)
+ax.plot(gp,t_rl[:,1]/t_rl[0,1], 'r', label = 'Empirical Spectra', linewidth = 0.5)
+ax.plot(gp, int_spectra/int_spectra[0],'b', label = 'Interpolated Spectra', linewidth = 0.5)
+ax.legend()
+plt.title('Comparison of Means-Interpolated vs Empirical Spectra for: ' + 
+          '$Teff =$ ' + str(Teff_new) + ', $log g =$ ' + str(logg_new) + ', $Z =$ ' + str(Z_new))
 #compar = t_rl - int_spectra
-
-plt.xlabel('Wavelength (\u03BC m)')
+plt.xlabel('Wavelength ($\mu$$m$)')
 plt.ylabel('Normalised Flux')
+
 plt.show()
 
 

@@ -2,6 +2,7 @@ import numpy as np
 from astropy.io import ascii
 from astropy.io import fits
 import itertools
+import os
 
 # Code pertaining to reading and also determining file names in the irtf library
 
@@ -55,7 +56,10 @@ def get_spectra(ID):
 
 def set_spectra_name(Teff,logg,Z):
 
-	#exists = os.
+	exists = os.path.isdir('Interpolated_Spectra/')
+
+	if exists is False:
+		os.system('mkdir Interpolated_Spectra')
 
 	Teff_s = '%4.0f' % Teff
 

@@ -37,7 +37,7 @@ rad = 2.5
 
 range_Teff = max(Teff)-min(Teff)
 #Teff_new = input('Please enter a Teff between ' + str(max(Teff)) + ' and ' + str(min(Teff)))
-Teff_new = 5741
+Teff_new = 5740
 range_logg = max(logg)-min(logg)
 #logg_new = input('Please enter a logg between ' + str(max(logg)) + ' and ' + str(min(logg)))
 logg_new = 0.81
@@ -46,24 +46,24 @@ range_Z = max(Z)-min(Z)
 Z_new = 0.07
 new_point = np.array([Teff_new, logg_new, Z_new])
 
-# Removed IRL46 for testing
+# Removed IRL152 for testing
 
 
 
 
 
-#plt.figure()
+plt.figure()
 
-#cm = plt.cm.get_cmap('PRGn')
-#plot = plt.scatter(Teff, logg, c=Z, cmap=cm)
-#plt.colorbar(plot)
-#plt.scatter(Teff_new,logg_new, c='r')
-#plt.xlabel('Teff')
-#plt.ylabel('logg')
-#plt.gca().invert_xaxis()
-#plt.gca().invert_yaxis()
+cm = plt.cm.get_cmap('PRGn')
+plot = plt.scatter(Teff, logg, c=Z, cmap=cm)
+plt.colorbar(plot)
+plt.scatter(Teff_new,logg_new, c='r')
+plt.xlabel('Teff')
+plt.ylabel('logg')
+plt.gca().invert_xaxis()
+plt.gca().invert_yaxis()
 
-#plt.show()
+plt.show()
 
 length = len(Z)
 #one = np.ones((length,3))
@@ -73,7 +73,7 @@ new_point_big = np.tile(new_point,(length,1))
  #compare the two
 
 Tn = 1
-gn = 1
+gn = 8
 Zn = 1
 
 Diff = abs(new_point_big - t)
@@ -188,6 +188,15 @@ xp = np.linspace(0,len(t2),len(t2))
 
 gp = np.arange(0,len(t_1))
 
+
+print('Difference in the Interpolated Spectra and the Empirical Spectra is: ' + str(np.sum(abs(int_spectra-t_rl[:,1]))))
+
+diffs = abs(int_spectra-t_rl[:,1])
+
+file_spectra = ret.set_spectra_name(Teff_new, logg_new, Z_new)
+
+np.savetxt(file_spectra,(gp, int_spectra))
+
 plt.figure()
 
 ax = plt.subplot(111)
@@ -196,10 +205,14 @@ ax.plot(gp, int_spectra,'b', label = 'Interpolated Spectra', linewidth = 0.5)
 ax.legend()
 plt.title('Comparison of Means-Interpolated vs Empirical Spectra for: ' + 
           '$Teff =$ ' + str(Teff_new) + ', $log g =$ ' + str(logg_new) + ', $Z =$ ' + str(Z_new))
-#compar = t_rl - int_spectra
 plt.xlabel('Wavelength ($\mu$$m$)')
 plt.ylabel('Flux')
 
+plt.show()
+
+
+plt.figure()
+plt.plot(gp,diffs)
 plt.show()
 
 

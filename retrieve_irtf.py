@@ -44,22 +44,23 @@ def get_spectra(ID):
 	
 	# First it retrieves the data from the corresponding fits file
 	t = fits.getdata('irtf/' + ID + '.fits')
-
+	l0 = fits.getheader('irtf/' + ID + '.fits')['CRVAL1']
+	dl = fits.getheader('irtf/' + ID + '.fits')['CDELT1']
 
 	# creates a new array to put all the values in
 	tt = np.zeros([len(t),2])
 	tt[:,1] = t
-	tt[:,0] = np.arange(0,len(t))
+	tt[:,0] = np.arange(l0,l0 + dl*(len(t)-dl),dl)
 	
 	# returns the new array
 	return(tt)
 
-def set_spectra_name(Teff,logg,Z):
+def set_spectra_name(Teff, logg, Z):
 
-	exists = os.path.isdir('Interpolated_Spectra/')
+	exists = os.path.isdir('Stellar_Spectra/')
 
 	if exists is False:
-		os.system('mkdir Interpolated_Spectra')
+		os.system('mkdir Stellar_Spectra')
 
 	Teff_s = '%4.0f' % Teff
 
@@ -67,12 +68,14 @@ def set_spectra_name(Teff,logg,Z):
 		logg_s = '%1s%4.2f' % ('-', abs(logg))
 	else:
 		logg_s = '%1s%4.2f' % ('+', abs(logg))
-
-	Z_s = '%4.2f' % Z	
+	if Z < 0:
+		Z_s = '%1s%4.2f' % ('-', abs(Z))
+	else:
+		Z_s = '%1s%4.2f' % ('+', abs(Z))	
 
 	temp_s = [Teff_s,logg_s,Z_s]
 	
-	sp_file = './Interpolated_Spectra/flux_Teff_' + temp_s[0] + '_logg' + temp_s[1]\
+	sp_file = 'intspectra_Teff' + temp_s[0] + '_logg' + temp_s[1]\
 		+ '_Z' +temp_s[2]
 
 	return sp_file
